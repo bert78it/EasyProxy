@@ -1,19 +1,27 @@
-name: Auto Sync Fork
+name: Sync Upstream
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Controlla aggiornamenti ogni notte a mezzanotte
-  workflow_dispatch:      # Ti permette di farlo anche a mano con un tasto
+    - cron: '0 0 * * *' # Aggiorna ogni notte
+  workflow_dispatch:    # Abilita il tasto manuale
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Serve per permettere all'azione di scrivere nel tuo repo
+      contents: write
     steps:
-      - name: Sync upstream changes
-        uses: ad-m/github-push-action@master
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          force: true # Forza l'allineamento con l'originale
+          fetch-depth: 0
+
+      - name: Update from Upstream
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/realbestia1/EasyProxy.git
+          git fetch upstream
+          git checkout main
+          git merge upstream/main --allow-unrelated-histories || echo "Nessun aggiornamento"
+          git push origin main
