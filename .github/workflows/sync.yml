@@ -1,0 +1,19 @@
+name: Auto Sync Fork
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Controlla aggiornamenti ogni notte a mezzanotte
+  workflow_dispatch:      # Ti permette di farlo anche a mano con un tasto
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Serve per permettere all'azione di scrivere nel tuo repo
+    steps:
+      - name: Sync upstream changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          force: true # Forza l'allineamento con l'originale
