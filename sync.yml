@@ -1,0 +1,24 @@
+name: Auto Sync Fork
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Controlla aggiornamenti ogni ora
+  workflow_dispatch:      # Ti permette di farlo anche a mano con un tasto
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          ref: main # O il nome del tuo branch principale
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync upstream changes
+        id: sync
+        uses: aieri/sync-upstream-repo@v1.3.0
+        with:
+          upstream_repo: https://github.com/realbestia1/EasyProxy.git
+          upstream_branch: main
+          target_branch: main # Il tuo branch su bert78it
